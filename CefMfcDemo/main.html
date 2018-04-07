@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+</head>
+<body style="background-image: url('img/wrxj.jpg')">
+	<iframe id="aa" frameborder="no" class="main"  src="view.html"></iframe>
+</body>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var data7Value1 = [];
+var data7Value2 = [];
+var data7Value3 = [];
+var differenceValue = [];
+var map1 = {};
+var map2 = {};
+var map3 = {};
+
+var zoom = $(window).width() / 1920;
+
+function zoomView(obj,size) {
+	obj.width(zoom * obj.width()).height(zoom * obj.height());
+	obj.css("margin-left", parseInt(obj.css('margin-left')) * zoom + "px");
+	obj.css("margin-top", parseInt(obj.css('margin-top')) * zoom + "px");
+	
+	if(size){
+		obj.css("font-size", parseInt(obj.css('font-size')) * zoom + "px");
+	}
+}
+zoomView($(".main"),false);
+
+var iframe = document.getElementById('aa').contentWindow;
+function clear(){
+	data7Value1.splice(0,data7Value1.length);
+	data7Value2.splice(0,data7Value2.length);
+	data7Value3.splice(0,data7Value3.length);
+	differenceValue.splice(0,differenceValue.length);
+	var data = {type:1,data1:data7Value1,data2:data7Value2,data3:data7Value3,data4:differenceValue};
+	iframe.postMessage(data,"*");
+}
+
+function updataStandardLine(x,y){
+	var xs = x.split(",");
+	var ys = y.split(",");
+	var length = xs.length;
+	if(ys.length < length){
+		length = ys.length;
+	}
+	for(var i = 0;i < length;i++){
+		data7Value1.push([parseFloat(xs[i]),parseFloat(ys[i])]);
+	}
+	var data = {type:2,data:data7Value1};
+	iframe.postMessage(data,"*");
+}
+
+function updataRealTimeLine(x,y){
+
+	var xs = x.split(",");
+	var ys = y.split(",");
+	var length = xs.length;
+	if(ys.length < length){
+		length = ys.length;
+	}
+	for(var i = 0;i < length;i++){
+		data7Value2.push([parseFloat(xs[i]),parseFloat(ys[i])]);
+	}
+	var data = {type:3,data:data7Value2};
+	iframe.postMessage(data,"*");
+}
+
+function updataDeviationLine(x,y){
+	var xs = x.split(",");
+	var ys = y.split(",");
+	var length = xs.length;
+	if(ys.length < length){
+		length = ys.length;
+	}
+	for(var i = 0;i < length;i++){
+		data7Value3.push([parseFloat(xs[i]),parseFloat(ys[i])]);
+	}
+	var data = {type:4,data:data7Value3};
+	iframe.postMessage(data,"*");
+}
+function updataDifferenceLine(x,y){
+	var xs = x.split(",");
+	var ys = y.split(",");
+	var length = xs.length;
+	if(ys.length < length){
+		length = ys.length;
+	}
+	for(var i = 0;i < length;i++){
+		differenceValue.push([parseFloat(xs[i]),parseFloat(ys[i])]);
+	}
+	var data = {type:25,data:differenceValue};
+	iframe.postMessage(data,"*");
+
+}
+
+window.addEventListener('message',function(e){
+    switch(e.data.type){
+    	case 20:
+    		var data = {type:1,data1:data7Value1,data2:data7Value2,data3:data7Value3,data4:differenceValue,type1:viewData.type};
+			iframe.postMessage(data,"*");
+    		break;
+    	case 21:
+    		var data = {type:13,data:viewData};
+			iframe.postMessage(data,"*");
+    		break;
+    }
+},false);
+
+	var viewData={type:"0"};
+	/**开启设备
+	 * state状态 0正常，1关闭
+	 */
+	function startDev(state){
+		viewData.state1 = state;
+		var data = {type:5,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	/**抽风机状态
+	 * realTimeSpeed实时风速
+	 * setSpeed设定风速
+	 */
+	function cfj(realTimeSpeed,setSpeed){
+		viewData.realTimeSpeed = realTimeSpeed;
+		viewData.setSpeed = setSpeed;
+		var data = {type:6,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	/**示踪气体释放
+	 * state状态 0正常，1异常
+	 * time时间
+	 */
+	function srackGas(state,time){
+		viewData.state2 = state;
+		viewData.time = time;
+		var data = {type:7,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	/**六氟化硫状态
+	 * state状态 0正常，1关闭
+	 */
+	function sf6(state){
+		viewData.state3 = state;
+		var data = {type:8,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	
+	
+	/**输入温湿度状态
+	 * state状态 0正常，1关闭
+	 * temperature温度 
+	 * humidity湿度
+	 */
+	function inputWS(state,temperature,humidity){
+		viewData.state4 = state;
+		viewData.temperature = temperature;
+		viewData.humidity = humidity;
+		var data = {type:9,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	
+	
+	/**激发器状态
+	 * state10正常，1关闭
+	 * state20正常，1关闭
+	 */
+	function exciter(state1,state2){
+		viewData.state5 = state1;
+		viewData.state6 = state2;
+		var data = {type:10,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	
+	
+
+	/**输出温湿度状态
+	 * state状态 0正常，1关闭
+	 * temperature温度 
+	 * humidity湿度
+	 * concentration浓度
+	 */
+	function outputWS(state,temperature,humidity,concentration){
+		viewData.state7 = state;
+		viewData.temperature1 = temperature;
+		viewData.humidity1 = humidity;
+		viewData.checkSpeed1 = concentration;
+		var data = {type:11,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	
+	
+	/**云服务状态
+	 * state状态 0正常，1关闭
+	 */
+	function yunConnect(state){
+		viewData.state8 = state;
+		var data = {type:12,data:viewData};
+		iframe.postMessage(data,"*");
+	}
+	/**
+	*更换图形
+	*/
+	function changeChart(type){
+		
+		viewData.type = type;
+		var data = {type:30,data:type};
+		iframe.postMessage(data,"*");
+	}
+//updataRealTimeLine("1,10,20","100,200,300");
+//updataRealTimeLine("20,30,40","100,200,300");
+//updataRealTimeLine("50,60,70","100,200,300");
+</script>
+</html>

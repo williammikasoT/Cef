@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>C++ 调用 JavaScript 函数</title>
+
+    <script>
+        function ShowCppInfo(info,info_Y) {
+            document.getElementById("txtInfo").value = info + info_Y;
+            alert("这是 C++ 发来的数据：" + "X坐标"+ info +" Y坐标" + info_Y);
+        }
+		/*function ShowCppInfo1(info) {
+            alert("这是 C++ 发来的数据：" + info.a);
+        }
+		function ShowCppInfo2(info) {
+            alert("这是 C++ 发来的数据：" + info[0][0]);
+        }*/
+    </script>
+</head>
+<body>
+    <input id="txtInfo" type="text" />
+</body>
+</html>
